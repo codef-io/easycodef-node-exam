@@ -52,7 +52,6 @@ codef.setClientInfo(CLIENT_ID, CLIENT_SECRET);
 let param = {
   connectedId: '9GNB80TmkzNaX-E7zG....',
   organization: '0045',
-  debug: true,
 };
 
 const productUrl = '/v1/kr/bank/p/account/account-list'; //  개인 보유계좌 조회 URL
