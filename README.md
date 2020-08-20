@@ -8,18 +8,22 @@
 $ git clone https://github.com/codef-io/easycodef-node-exam.git
 
 # npm install
-npm i easycodef-node
+
+$ npm i easycodef-node
+
 또는 
-npm install git+https://github.com/codef-io/easycodef-node
+
+$ npm install git+https://github.com/codef-io/easycodef-node
 
 ```
 
 ### Use it
 
 각 예제를 사용할 때 코드에프 가입을 통해 발급 받은 클라이언트 정보를 설정하여 사용합니다.
-코드에프 홈페이지 https://codef.io  > 로그인 > 키관리 화면을 참고하여주세요.
  
 ```node
+
+코드에프 홈페이지 https://codef.io  > 로그인 > 키관리 화면을 참고하여주세요.
 
 // 데모
 const DEMO_CLIENT_ID = '데모버전 클라이언트 아이디 설정';
