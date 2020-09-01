@@ -1,5 +1,5 @@
 /**
- *  코드에프 예제 - 추가인증 요청(2way)상품 요청 예시 (보험다보여 > 회원가입신청 )
+ *  코드에프 예제 - 추가인증 요청(2way)상품 요청 예시 (공정거래위원회 > 수신거부 등록/해제 신청)
  *  - https://developer.codef.io/products
  *
  * @Company : ©CODEF corp.
@@ -7,7 +7,8 @@
  * @Date    : Aug 1, 2020 3:36:11 PM
  * @Version : 1.0.0
  */
-const  { EasyCodef, EasyCodefConstant, EasyCodefUtil}  = require('easycodef-node');
+const { EasyCodef, EasyCodefConstant } = require('easycodef-node');
+const readline = require('readline');
 
 //코드에프 가입을 통해 발급 받은 클라이언트 정보 - 데모
 const DEMO_CLIENT_ID = '';
@@ -46,58 +47,71 @@ codef.setClientInfoForDemo(DEMO_CLIENT_ID, DEMO_CLIENT_SECRET);
  */
 codef.setClientInfo(CLIENT_ID, CLIENT_SECRET);
 
-/*
- * #5.요청 파라미터 설정
- * - 계정관리 파라미터를 설정(https://developer.codef.io/cert/account/cid-overview)
- */
-function reqInputData() {
+run();
+
+async function run() {
+  const productUrl = '/v1/kr/public/ft/do-not-call/set-register'; // 공정거래위원회 수신거부 등록/해제 신청
+  /*
+   * #5.요청 파라미터 설정
+   * - 수신거부 등록/해제 신청 파라미터를 설정(https://developer.codef.io/products/public/each/ft/set-register)
+   */
   let param = {
     organization: '0001',
-    userName: 'user_name',
-    identity: 'user_identity',
-    id: 'user_id',
-    password: EasyCodefUtil.encryptRSA(PUBLIC_KEY, 'user_password'),
-    email: 'user_email',
-    inquiryType: '0',
+    userName: '이름',
+    identity: '199101011',
+    phoneNo: '01000000000',
     telecom: '0',
-    phoneNo: 'user_phoneNo',
-    timeout: '160',
+    timeout: '120',
+    authMethod: '0',
+    applicationType: '0',
+    phoneNo1: '',
   };
-  return param;
+
+  const serviceType = EasyCodefConstant.SERVICE_TYPE_API;
+
+  /*	#6.요청
+   *  [서비스 타입 설정]
+   *      - 샌드박스 : EasyCodefConstant.SERVICE_TYPE_SANDBOX
+   *      - 데모 : EasyCodefConstant.SERVICE_TYPE_DEMO
+   *      - 운영 : EasyCodefConstant.SERVICE_TYPE_API
+   */
+  let res = await codef.requestProduct(productUrl, serviceType, param);
+  // #7.응답 결과
+  console.log(res);
+
+  // #8. 추가인증 요청
+  const resObj = JSON.parse(res);
+  if (resObj.result.code === 'CF-03002') {
+    await requestTwoWay(resObj, productUrl, serviceType, param);
+  } else {
+    process.exit();
+  }
 }
-const productUrl = '/v1/kr/insurance/0001/credit4u/register'; // 보험 다보여 회원가입신청
 
-/*	#6.요청
- *  [서비스 타입 설정]
- *      - 샌드박스 : EasyCodefConstant.SERVICE_TYPE_SANDBOX
- *      - 데모 : EasyCodefConstant.SERVICE_TYPE_DEMO
- *      - 운영 : EasyCodefConstant.SERVICE_TYPE_API
+/**
+ * 2way 요청 (codef.requestCertification 사용)
+ * 추가 인증이 필요할 경우 재귀호출한다.
+ * @param {*} response
+ * @param {*} productUrl
+ * @param {*} serviceType
+ * @param {*} param
  */
-requestProduct(reqInputData());
+async function requestTwoWay(response, productUrl, serviceType, param) {
+  // 응답코드 - CF-03002 추가인증 요청 응답
+  const twoWayParam = await createTwoWayParam(response, param);
+  const res = await codef.requestCertification(
+    productUrl,
+    serviceType,
+    twoWayParam
+  );
+  console.log(res);
 
-function requestProduct(inputData) {
-  codef
-    .requestProduct(
-      productUrl,
-      EasyCodefConstant.SERVICE_TYPE_SANDBOX,
-      inputData
-    )
-    .then(function (response) {
-      /*
-       *  #7.응답 결과
-       */
-      console.log(response);
-      /*
-       * #8.추가인증 요청
-       */
-      let resObj = JSON.parse(response);
-      if (resObj.result.code == 'CF-03002') {
-        // 응답코드 - CF-03002 추가인증 요청 응답
-        requestTwoWayInfo(JSON.stringify(resObj.data));
-      } else {
-        process.exit();
-      }
-    });
+  const resObj = JSON.parse(res);
+  if (resObj.result.code === 'CF-03002') {
+    await requestTwoWay(resObj, productUrl, serviceType, param);
+  } else {
+    process.exit();
+  }
 }
 
 /*
@@ -133,49 +147,57 @@ function requestProduct(inputData) {
         }
  * @param response
  */
-function requestTwoWayInfo(response) {
-  let resObj = JSON.parse(response);
+function createTwoWayParam(response, param) {
+  const resObj = response.data;
   const readLine_1 = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
-  if (resObj.method == 'secureNo') {
-    //+  보안문자 입력
-    console.log("보안문자 입력 :: ");
-    readLine_1.setPrompt();
-  } else if (resObj.method == 'smsAuthNo') {
-    //+ SMS 입력
-    console.log("SMS 입력 :: ");
-    readLine_1.setPrompt();
-  } else if (resObj.method == 'simpleAuth') {
-    //+ PASS 인증 입력
-    console.log("PASS 인증 입력 :: ");
-    readLine_1.setPrompt();
-  } else if (resObj.method == 'emailAuthNo') {
-    //+ PASS 인증 입력
-    console.log("이메일 인증 입력 :: ");
-    readLine_1.setPrompt();
-  } else {
-    process.exit();
-    return;
+  switch (resObj.method) {
+    case 'secureNo':
+      //+  보안문자 입력
+      console.log('보안문자 입력 :: ');
+      readLine_1.setPrompt();
+      break;
+    case 'smsAuthNo':
+      //+ SMS 입력
+      console.log('SMS 입력 :: ');
+      readLine_1.setPrompt();
+      break;
+    case 'simpleAuth':
+      //+ PASS 인증 입력
+      console.log('PASS 인증 입력 :: ');
+      readLine_1.setPrompt();
+      break;
+    case 'emailAuthNo':
+      //+ PASS 인증 입력
+      console.log('이메일 인증 입력 :: ');
+      readLine_1.setPrompt();
+      break;
+    default:
+      process.exit();
   }
 
-  readLine_1
-    .on("line", function (line) {
-      let inputParam = reqInputData();
-      if (resObj.method == 'secureNo') {
-        //+  보안문자 입력
-        inputParam.secureNo = line;
-        inputParam.secureNoRefresh = "0";
-      } else if (resObj.method == 'smsAuthNo') {
-        //+ SMS 입력
-        inputParam.smsAuthNo = line;
-      } else if (resObj.method == 'simpleAuth') {
-        //+ SMS 입력
-        inputParam.simpleAuth = "1";
-      } else if (resObj.method == 'emailAuthNo') {
-        inputParam.emailAuthNo = line;
+  return new Promise((resolve) => {
+    readLine_1.on('line', function (line) {
+      switch (resObj.method) {
+        case 'secureNo':
+          //+  보안문자 입력
+          param.secureNo = line;
+          param.secureNoRefresh = '0';
+          break;
+        case 'smsAuthNo':
+          //+ SMS 입력
+          param.smsAuthNo = line;
+          break;
+        case 'simpleAuth':
+          //+ PASS 인증 입력
+          param.simpleAuth = '1';
+          break;
+        case 'emailAuthNo':
+          //+ PASS 인증 입력
+          param.emailAuthNo = line;
       }
 
       let twoWayInfo = {
@@ -185,13 +207,11 @@ function requestTwoWayInfo(response) {
         twoWayTimestamp: parseFloat(resObj.twoWayTimestamp),
       };
 
-      inputParam.twoWayInfo = twoWayInfo;
-      inputParam.is2Way = true;
+      param.twoWayInfo = twoWayInfo;
+      param.is2Way = true;
       readLine_1.close();
 
-      requestProduct(inputParam);
-    })
-    .on('close', function () {
-      // process.exit();
+      resolve(param);
     });
+  });
 }
