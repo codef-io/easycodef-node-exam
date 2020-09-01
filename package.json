@@ -1,0 +1,22 @@
+{
+  "name": "easycodef-node-exam",
+  "version": "1.0.0",
+  "description": "### About [easycodef-node](https://github.com/codef-io/easycodef-node) 라이브러리 사용 예제입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codef-io/easycodef-node-exam.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codef-io/easycodef-node-exam/issues"
+  },
+  "homepage": "https://github.com/codef-io/easycodef-node-exam#readme",
+  "dependencies": {
+    "easycodef-node": "git+https://github.com/codef-io/easycodef-node.git"
+  }
+}
