@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/codef-io/easycodef-node-exam#readme",
   "dependencies": {
-    "easycodef-node": "git+https://github.com/codef-io/easycodef-node.git"
+    "easycodef-node": "^1.0.1"
   }
 }
