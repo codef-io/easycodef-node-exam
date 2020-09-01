@@ -7,7 +7,11 @@
  * @Date    : Aug 1, 2020 3:36:11 PM
  * @Version : 1.0.0
  */
-const  { EasyCodef, EasyCodefConstant, EasyCodefUtil}  = require('easycodef-node');
+const {
+  EasyCodef,
+  EasyCodefConstant,
+  EasyCodefUtil,
+} = require('easycodef-node');
 
 //코드에프 가입을 통해 발급 받은 클라이언트 정보 - 데모
 const DEMO_CLIENT_ID = '';
@@ -63,7 +67,7 @@ const accountCert = {
   certType: '1',
   keyFile: EasyCodefUtil.encodeToFileString('.../.../signPri.key'),
   derFile: EasyCodefUtil.encodeToFileString('.../.../signCert.der'),
-  password: EasyCodefUtil.encryptRSA(PUBLIC_KEY, 'user_password')
+  password: EasyCodefUtil.encryptRSA(PUBLIC_KEY, 'user_password'),
 };
 accountList.push(accountCert);
 
@@ -75,7 +79,7 @@ const accountIDPWD = {
   organization: '0081',
   loginType: '1',
   id: 'user_id',
-  password: EasyCodefUtil.encryptRSA(PUBLIC_KEY, 'user_password')
+  password: EasyCodefUtil.encryptRSA(PUBLIC_KEY, 'user_password'),
 };
 accountList.push(accountIDPWD);
 

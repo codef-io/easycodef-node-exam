@@ -7,7 +7,7 @@
  * @Date    : Aug 1, 2020 3:36:11 PM
  * @Version : 1.0.0
  */
-const  { EasyCodef, EasyCodefConstant}  = require('easycodef-node');
+const { EasyCodef, EasyCodefConstant } = require('easycodef-node');
 
 //코드에프 가입을 통해 발급 받은 클라이언트 정보 - 데모
 const DEMO_CLIENT_ID = '';

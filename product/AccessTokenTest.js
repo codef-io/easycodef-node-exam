@@ -7,7 +7,7 @@
  * @Date    : Aug 1, 2020 3:36:11 PM
  * @Version : 1.0.0
  */
-const  { EasyCodef, EasyCodefConstant, EasyCodefUtil}  = require('easycodef-node');
+const { EasyCodef, EasyCodefConstant } = require('easycodef-node');
 
 //코드에프 가입을 통해 발급 받은 클라이언트 정보 - 데모
 const DEMO_CLIENT_ID = '';
@@ -19,7 +19,6 @@ const CLIENT_SECRET = '';
 
 //	코드에프 가입을 통해 발급 받은 RSA 공개키 정보
 const PUBLIC_KEY = '';
-
 
 /*
  * #1.쉬운 코드에프 객체 생성
